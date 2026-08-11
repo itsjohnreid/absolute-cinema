@@ -254,6 +254,21 @@ body {
   font-size: 0.9rem;
 }
 
+.film-overview {
+  margin: 0.9rem 0 0;
+  max-width: 46ch;
+  color: var(--bone-dim);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  /* Synopses run from 100 to 400+ characters; cap them so the readout keeps
+     its proportions against the poster. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
 .raw {
   margin: 1.1rem 0 0;
   display: grid;
@@ -267,7 +282,7 @@ body {
 
 .readout__poster img {
   display: block;
-  width: 92px;
+  width: 160px;
   height: auto;
   border-radius: 2px;
   border: 1px solid var(--rule);
@@ -373,7 +388,8 @@ body {
     grid-template-columns: 1fr auto;
   }
   .readout__score { grid-column: 1 / -1; }
-  .readout__poster img { width: 74px; }
+  .readout__poster img { width: 110px; }
+  .film-overview { max-width: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

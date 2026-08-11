@@ -25,6 +25,7 @@
     caption: document.getElementById('score-caption'),
     title: document.getElementById('film-title'),
     credits: document.getElementById('film-credits'),
+    overview: document.getElementById('film-overview'),
     raw: document.getElementById('raw'),
     poster: document.getElementById('poster'),
     marker: document.getElementById('marker'),
@@ -62,13 +63,20 @@
     if (!res.ok) throw new Error(`TMDB returned ${res.status}.`);
 
     const data = await res.json();
-    // TMDB returns popularity-ordered results; keep that order.
-    return (data.results || []).slice(0, 8).map((r) => ({
-      tmdbId: r.id,
-      name: r.title,
-      year: r.release_date ? Number(r.release_date.slice(0, 4)) : null,
-      voteCount: r.vote_count ?? 0,
-    }));
+    // TMDB returns popularity-ordered results; keep that order. Films with
+    // almost no votes are overwhelmingly absent from Letterboxd too, so
+    // dropping them removes dead ends rather than choices.
+    const minVotes = CFG.MIN_VOTES ?? 0;
+    return (data.results || [])
+      .filter((r) => (r.vote_count ?? 0) >= minVotes)
+      .slice(0, 8)
+      .map((r) => ({
+        tmdbId: r.id,
+        name: r.title,
+        year: r.release_date ? Number(r.release_date.slice(0, 4)) : null,
+        voteCount: r.vote_count ?? 0,
+        overview: r.overview || '',
+      }));
   }
 
   /**
@@ -333,6 +341,9 @@
     el.credits.textContent = film.directors?.length
       ? `Directed by ${film.directors.join(', ')}`
       : '';
+
+    el.overview.textContent = film.overview || '';
+    el.overview.hidden = !film.overview;
 
     const rows = [
       dataRow('Letterboxd', `${rating.toFixed(2)} / 5`),

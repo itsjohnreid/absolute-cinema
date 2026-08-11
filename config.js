@@ -49,4 +49,23 @@ window.AC_CONFIG = {
 
   /** How long to reuse fetched values before refreshing, in hours. */
   ANCHOR_TTL_HOURS: 24,
+
+  /**
+   * Hide search results with fewer than this many TMDB ratings.
+   *
+   * A low vote count reliably means the film isn't on Letterboxd either.
+   * Measured across 223 films on 2026-08-11:
+   *
+   *   votes   on Letterboxd
+   *   0–4      14%
+   *   5–9      38%
+   *   10–24    73%
+   *   25–49    92%
+   *   50+     100%
+   *
+   * 5 clears out the noise (29 results dropped, only 4 of which had ratings)
+   * without cutting into genuinely obscure films. Raise it to be stricter;
+   * set it to 0 to show everything TMDB returns.
+   */
+  MIN_VOTES: 5,
 };

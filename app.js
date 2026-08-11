@@ -28,10 +28,6 @@
     raw: document.getElementById('raw'),
     poster: document.getElementById('poster'),
     marker: document.getElementById('marker'),
-    loName: document.getElementById('anchor-lo-name'),
-    loRating: document.getElementById('anchor-lo-rating'),
-    hiName: document.getElementById('anchor-hi-name'),
-    hiRating: document.getElementById('anchor-hi-rating'),
     notice: document.getElementById('notice'),
     calibration: document.getElementById('calibration'),
   };
@@ -72,6 +68,26 @@
       name: r.title,
       year: r.release_date ? Number(r.release_date.slice(0, 4)) : null,
     }));
+  }
+
+  /**
+   * Directors aren't in search results, so they need a credits call per film.
+   * Results render first and these fill in as they land — same-title films are
+   * easier to tell apart by director than by year alone.
+   */
+  async function fetchDirectors(tmdbId, signal) {
+    const res = await fetch(`${TMDB}/movie/${tmdbId}/credits`, {
+      signal,
+      headers: {
+        Authorization: `Bearer ${CFG.TMDB_TOKEN}`,
+        Accept: 'application/json',
+      },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.crew || [])
+      .filter((p) => p.job === 'Director')
+      .map((p) => p.name);
   }
 
   // ---------- Worker: Letterboxd ratings ----------
@@ -146,10 +162,6 @@
 
   function applyAnchors(value, source) {
     anchors = value;
-    el.loName.textContent = filmLabel(value.lowest);
-    el.hiName.textContent = filmLabel(value.highest);
-    el.loRating.textContent = `${value.lowest.rating.toFixed(2)}★`;
-    el.hiRating.textContent = `${value.highest.rating.toFixed(2)}★`;
     el.calibration.textContent =
       `Scale runs ${value.lowest.rating.toFixed(2)}★ to ` +
       `${value.highest.rating.toFixed(2)}★ (${source}).`;
@@ -209,7 +221,11 @@
         year.className = 'results__year';
         year.textContent = film.year ?? '';
 
-        li.append(name, year);
+        const director = document.createElement('span');
+        director.className = 'results__director';
+        director.dataset.for = String(film.tmdbId);
+
+        li.append(name, year, director);
         // mousedown, so the pick lands before blur closes the list
         li.addEventListener('mousedown', (e) => {
           e.preventDefault();
@@ -221,6 +237,31 @@
 
     el.results.hidden = false;
     el.input.setAttribute('aria-expanded', 'true');
+
+    fillDirectors(films);
+  }
+
+  /**
+   * Fills each row's director in as its credits call resolves. Rows are matched
+   * by TMDB id rather than index, so a slow response landing after a newer
+   * search can't write into the wrong row.
+   */
+  function fillDirectors(films) {
+    const token = searchToken;
+    films.forEach((film) => {
+      fetchDirectors(film.tmdbId)
+        .then((directors) => {
+          if (token !== searchToken || !directors.length) return;
+          film.directors = directors;
+          const slot = el.results.querySelector(
+            `.results__director[data-for="${film.tmdbId}"]`
+          );
+          if (slot) slot.textContent = directors.join(', ');
+        })
+        .catch(() => {
+          // A missing director just leaves the slot empty.
+        });
+    });
   }
 
   function closeList() {

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Absolute Cinema — Letterboxd ratings on the full scale</title>
+<meta name="description" content="Search any film and see its Letterboxd rating normalised against the highest and lowest rated films of all time, so 0% is the worst possible and 100% is the best.">
+<meta name="theme-color" content="#0F0D0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="masthead">
+  <h1 class="wordmark">Absolute&nbsp;Cinema</h1>
+  <p class="tagline">Letterboxd averages bunch up between 2 and 4 stars. This stretches them across the whole scale, from the lowest rated film of all time to the highest.</p>
+</header>
+
+<main class="stage">
+
+  <form class="search" role="search" autocomplete="off">
+    <label class="search__label" for="q">Search a film</label>
+    <div class="search__field">
+      <input
+        id="q"
+        class="search__input"
+        type="search"
+        name="q"
+        placeholder="Heat, Paddington 2, Cats…"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="results"
+        aria-autocomplete="list"
+        spellcheck="false">
+      <span class="search__status" id="search-status" aria-hidden="true"></span>
+    </div>
+    <ul class="results" id="results" role="listbox" aria-label="Film search results" hidden></ul>
+  </form>
+
+  <p class="live" role="status" aria-live="polite"></p>
+
+  <!-- Placeholder: shown until a film is picked -->
+  <section class="panel panel--empty" id="empty">
+    <p class="empty__line">Search a film to place it on the scale.</p>
+  </section>
+
+  <!-- Readout: the signature element -->
+  <section class="panel panel--readout" id="readout" hidden aria-labelledby="film-title">
+    <div class="readout">
+      <div class="readout__score">
+        <output class="score" id="score" for="q">—</output>
+        <span class="score__unit">%</span>
+        <span class="score__caption" id="score-caption">normalised</span>
+      </div>
+
+      <div class="readout__meta">
+        <h2 class="film-title" id="film-title"></h2>
+        <p class="film-credits" id="film-credits"></p>
+        <dl class="raw" id="raw"></dl>
+      </div>
+
+      <div class="readout__poster">
+        <img id="poster" alt="" width="92" height="138" hidden>
+      </div>
+    </div>
+
+    <div class="scale" id="scale">
+      <div class="scale__track">
+        <div class="scale__ticks" aria-hidden="true"></div>
+        <div class="scale__marker" id="marker" hidden>
+          <span class="scale__caret" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div class="scale__ends">
+        <div class="scale__end scale__end--lo">
+          <span class="scale__pct">0%</span>
+          <span class="scale__stars" id="anchor-lo-rating"></span>
+          <span class="scale__film" id="anchor-lo-name"></span>
+        </div>
+        <div class="scale__end scale__end--hi">
+          <span class="scale__pct">100%</span>
+          <span class="scale__stars" id="anchor-hi-rating"></span>
+          <span class="scale__film" id="anchor-hi-name"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="notice" id="notice" hidden></p>
+
+</main>
+
+<footer class="colophon">
+  <p>Ratings from Letterboxd. Not affiliated with Letterboxd.</p>
+  <p class="colophon__calib" id="calibration"></p>
+</footer>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

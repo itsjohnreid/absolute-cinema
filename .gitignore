@@ -1,0 +1,4 @@
+# GitHub Pages: serve files as-is, no Jekyll processing
+node_modules/
+.DS_Store
+.wrangler/

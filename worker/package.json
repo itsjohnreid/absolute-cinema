@@ -1,0 +1,15 @@
+{
+  "name": "absolute-cinema-worker",
+  "private": true,
+  "type": "module",
+  "description": "Letterboxd rating proxy for Absolute Cinema",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "login": "wrangler login",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.120.1"
+  }
+}

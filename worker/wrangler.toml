@@ -3,8 +3,9 @@ main = "index.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-# Your GitHub Pages origin — no trailing slash, no path.
-# For a project site this is still just the origin, e.g. https://you.github.io
-ALLOWED_ORIGIN = "https://itsjohnreid.github.io"
+# Origins allowed to call this Worker, comma-separated. The Worker echoes back
+# whichever one matches the request, so one deployment serves both the live
+# site and local development.
+ALLOWED_ORIGINS = "https://itsjohnreid.github.io,http://localhost:8000,http://127.0.0.1:8000"
 
 # No secrets needed: Letterboxd film pages are public and unauthenticated.

@@ -11,7 +11,8 @@
  *   GET /rating?slug=heat-1995
  *   GET /anchors?hi=harakiri&lo=dragonball-evolution
  *
- * Var (wrangler.toml): ALLOWED_ORIGIN — your Pages origin. No secrets needed.
+ * Var (wrangler.toml): ALLOWED_ORIGINS — comma-separated list of origins
+ * allowed to call this Worker. No secrets needed.
  */
 
 const LB = 'https://letterboxd.com';
@@ -25,7 +26,7 @@ const CACHE_SECONDS = 86400;
 
 export default {
   async fetch(request, env, ctx) {
-    const origin = env.ALLOWED_ORIGIN || '*';
+    const origin = allowedOrigin(request.headers.get('Origin'), env);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors(origin) });
@@ -151,6 +152,20 @@ function httpError(message, status) {
   const err = new Error(message);
   err.status = status;
   return err;
+}
+
+/**
+ * Echoes back the caller's origin if it's on the allowlist, so the same
+ * deployment can serve both the Pages site and a local dev server. Falls back
+ * to the first configured origin, which keeps unlisted callers blocked.
+ */
+function allowedOrigin(requestOrigin, env) {
+  const list = (env.ALLOWED_ORIGINS || env.ALLOWED_ORIGIN || '*')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (list.includes('*')) return '*';
+  return list.includes(requestOrigin) ? requestOrigin : list[0];
 }
 
 function cors(origin) {

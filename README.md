@@ -55,7 +55,7 @@ npm install
 npm run login     # opens a browser to authorise Cloudflare
 ```
 
-Set `ALLOWED_ORIGIN` in `worker/wrangler.toml` to your Pages origin
+Set `ALLOWED_ORIGINS` in `worker/wrangler.toml` to include your Pages origin
 (`https://your-username.github.io`), then:
 
 ```sh
@@ -114,11 +114,19 @@ so.
 ## Running locally
 
 ```sh
-python3 -m http.server 8000
+./dev.py
 ```
 
-Point `PROXY_URL` at a local Worker (`cd worker && npm run dev`, port 8787), or
-temporarily set `ALLOWED_ORIGIN = "http://localhost:8000"` and redeploy.
+Serves the site at <http://localhost:8000> with no-cache headers, so a plain
+reload always shows your latest edit. Pass a port to change it (`./dev.py 3000`).
+
+Ratings come from the deployed Worker, so there's nothing else to run. The
+Worker allows `localhost:8000` and `127.0.0.1:8000` alongside the live site;
+if you use a different port, add it to `ALLOWED_ORIGINS` in
+`worker/wrangler.toml` and redeploy.
+
+To work on the Worker itself, `cd worker && npm run dev` runs it on :8787 —
+point `PROXY_URL` at that while you do.
 
 ## Files
 
@@ -126,6 +134,7 @@ temporarily set `ALLOWED_ORIGIN = "http://localhost:8000"` and redeploy.
 | --- | --- |
 | `index.html` / `styles.css` / `app.js` | The site |
 | `config.js` | Token, proxy URL, anchors — the only file you edit |
+| `dev.py` | Local dev server with no-cache headers |
 | `worker/index.js` | Letterboxd fetch-and-parse proxy |
 | `worker/package.json` | Wrangler as a local dev dependency |
 | `worker/wrangler.toml` | Worker config |

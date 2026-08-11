@@ -157,9 +157,9 @@ body {
 
 .results__item {
   display: grid;
-  grid-template-columns: 34px 1fr auto;
+  grid-template-columns: 54px 1fr auto;
   grid-template-rows: auto auto;
-  column-gap: 0.75rem;
+  column-gap: 0.85rem;
   row-gap: 0.1rem;
   align-items: baseline;
   padding: 0.6rem 1rem;
@@ -175,8 +175,8 @@ body {
 .results__thumb {
   grid-row: 1 / span 2;
   align-self: center;
-  width: 34px;
-  height: 51px;
+  width: 54px;
+  height: 81px;
   background: #221D17;
   border: 1px solid var(--rule);
   border-radius: 1px;

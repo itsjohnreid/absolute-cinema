@@ -77,7 +77,9 @@
         year: r.release_date ? Number(r.release_date.slice(0, 4)) : null,
         voteCount: r.vote_count ?? 0,
         overview: r.overview || '',
-        thumb: r.poster_path ? `${TMDB_IMG}/w92${r.poster_path}` : null,
+        // w154 rather than w92: the frame is 54px, so retina screens need the
+        // larger source to avoid a soft image.
+        thumb: r.poster_path ? `${TMDB_IMG}/w154${r.poster_path}` : null,
       }));
   }
 
@@ -232,8 +234,8 @@
           img.src = film.thumb;
           img.alt = '';
           img.loading = 'lazy';
-          img.width = 34;
-          img.height = 51;
+          img.width = 54;
+          img.height = 81;
           frame.append(img);
         }
 
@@ -255,7 +257,9 @@
 
         const votes = document.createElement('span');
         votes.className = 'results__votes';
-        votes.textContent = film.voteCount ? formatVotes(film.voteCount) : '';
+        votes.textContent = film.voteCount
+          ? `${formatVotes(film.voteCount)} ratings`
+          : '';
 
         li.append(frame, name, votes, director);
         // mousedown, so the pick lands before blur closes the list

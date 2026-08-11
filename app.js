@@ -67,6 +67,7 @@
       tmdbId: r.id,
       name: r.title,
       year: r.release_date ? Number(r.release_date.slice(0, 4)) : null,
+      voteCount: r.vote_count ?? 0,
     }));
   }
 
@@ -224,6 +225,9 @@
         const director = document.createElement('span');
         director.className = 'results__director';
         director.dataset.for = String(film.tmdbId);
+        // Vote count is the clearest "have you heard of this" signal TMDB
+        // gives us up front, and it's there before credits load.
+        director.textContent = subtitleFor(film);
 
         li.append(name, year, director);
         // mousedown, so the pick lands before blur closes the list
@@ -256,12 +260,29 @@
           const slot = el.results.querySelector(
             `.results__director[data-for="${film.tmdbId}"]`
           );
-          if (slot) slot.textContent = directors.join(', ');
+          if (slot) slot.textContent = subtitleFor(film);
         })
         .catch(() => {
-          // A missing director just leaves the slot empty.
+          // A missing director leaves the vote count in place.
         });
     });
+  }
+
+  /** "Christopher Nolan · 2.6k ratings" — either half may be missing. */
+  function subtitleFor(film) {
+    const parts = [];
+    if (film.directors?.length) parts.push(film.directors.join(', '));
+    if (film.voteCount) parts.push(`${formatVotes(film.voteCount)} ratings`);
+    return parts.join(' · ');
+  }
+
+  /** 2579 → "2.6k", 3355827 → "3.4M". Reads at a glance rather than counting digits. */
+  function formatVotes(n) {
+    if (n >= 995e3) return `${(n / 1e6).toFixed(1)}M`;
+    if (n < 1000) return String(n);
+    const k = n / 1000;
+    // Drop the decimal once it would round to 10k or more.
+    return k >= 9.95 ? `${Math.round(k)}k` : `${k.toFixed(1)}k`;
   }
 
   function closeList() {

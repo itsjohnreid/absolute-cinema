@@ -21,13 +21,13 @@ window.AC_CONFIG = {
    * This is a read-only token and it will be visible in your deployed source —
    * that is expected for TMDB, but treat it as public and rotate it if abused.
    */
-  TMDB_TOKEN: '',
+  TMDB_TOKEN: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2YmM2ZmQxMWRiZGJmZjY5NzI1MzVmM2I2ZDhkYjMxYSIsIm5iZiI6MTc4NjQyNDk0NC43NTIsInN1YiI6IjZhN2FhZTcwOTFmNDNkMjEzODAzYmJkYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.CBscTEJjq96bNwnVYkMRHDewcE6NaKK2XdD50yMveRY',
 
   /**
    * Base URL of your deployed Letterboxd proxy, no trailing slash.
    * e.g. 'https://absolute-cinema.your-name.workers.dev'
    */
-  PROXY_URL: '',
+  PROXY_URL: 'https://absolute-cinema.vanillacode.workers.dev',
 
   /**
    * The ends of the scale, as Letterboxd weighted averages out of 5.

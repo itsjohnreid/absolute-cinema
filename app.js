@@ -12,6 +12,7 @@
 
   const CFG = window.AC_CONFIG || {};
   const TMDB = 'https://api.themoviedb.org/3';
+  const TMDB_IMG = 'https://image.tmdb.org/t/p';
   const ANCHOR_CACHE_KEY = 'ac:anchors:v2';
 
   const el = {
@@ -76,6 +77,7 @@
         year: r.release_date ? Number(r.release_date.slice(0, 4)) : null,
         voteCount: r.vote_count ?? 0,
         overview: r.overview || '',
+        thumb: r.poster_path ? `${TMDB_IMG}/w92${r.poster_path}` : null,
       }));
   }
 
@@ -222,22 +224,40 @@
         li.setAttribute('role', 'option');
         li.setAttribute('aria-selected', 'false');
 
+        // Fixed-size frame, so rows don't reflow as posters decode
+        const frame = document.createElement('div');
+        frame.className = 'results__thumb';
+        if (film.thumb) {
+          const img = document.createElement('img');
+          img.src = film.thumb;
+          img.alt = '';
+          img.loading = 'lazy';
+          img.width = 34;
+          img.height = 51;
+          frame.append(img);
+        }
+
         const name = document.createElement('span');
         name.className = 'results__name';
-        name.textContent = film.name;
-
-        const year = document.createElement('span');
-        year.className = 'results__year';
-        year.textContent = film.year ?? '';
+        name.append(film.name);
+        if (film.year) {
+          const year = document.createElement('span');
+          year.className = 'results__year';
+          year.textContent = ` (${film.year})`;
+          name.append(year);
+        }
 
         const director = document.createElement('span');
         director.className = 'results__director';
         director.dataset.for = String(film.tmdbId);
-        // Vote count is the clearest "have you heard of this" signal TMDB
-        // gives us up front, and it's there before credits load.
-        director.textContent = subtitleFor(film);
+        // Non-breaking space holds the line's height until credits arrive.
+        director.textContent = film.directors?.join(', ') || ' ';
 
-        li.append(name, year, director);
+        const votes = document.createElement('span');
+        votes.className = 'results__votes';
+        votes.textContent = film.voteCount ? formatVotes(film.voteCount) : '';
+
+        li.append(frame, name, votes, director);
         // mousedown, so the pick lands before blur closes the list
         li.addEventListener('mousedown', (e) => {
           e.preventDefault();
@@ -268,20 +288,12 @@
           const slot = el.results.querySelector(
             `.results__director[data-for="${film.tmdbId}"]`
           );
-          if (slot) slot.textContent = subtitleFor(film);
+          if (slot) slot.textContent = directors.join(', ');
         })
         .catch(() => {
-          // A missing director leaves the vote count in place.
+          // A missing director leaves the reserved line blank.
         });
     });
-  }
-
-  /** "Christopher Nolan · 2.6k ratings" — either half may be missing. */
-  function subtitleFor(film) {
-    const parts = [];
-    if (film.directors?.length) parts.push(film.directors.join(', '));
-    if (film.voteCount) parts.push(`${formatVotes(film.voteCount)} ratings`);
-    return parts.join(' · ');
   }
 
   /** 2579 → "2.6k", 3355827 → "3.4M". Reads at a glance rather than counting digits. */
@@ -337,7 +349,13 @@
     el.empty.hidden = true;
     el.readout.hidden = false;
 
-    el.title.textContent = filmLabel(film);
+    el.title.replaceChildren(film.name);
+    if (film.year) {
+      const year = document.createElement('span');
+      year.className = 'film-title__year';
+      year.textContent = ` (${film.year})`;
+      el.title.append(year);
+    }
     el.credits.textContent = film.directors?.length
       ? `Directed by ${film.directors.join(', ')}`
       : '';

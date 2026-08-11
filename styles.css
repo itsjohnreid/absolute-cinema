@@ -157,10 +157,12 @@ body {
 
 .results__item {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0 0.75rem;
+  grid-template-columns: 34px 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 0.75rem;
+  row-gap: 0.1rem;
   align-items: baseline;
-  padding: 0.7rem 1rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   border-bottom: 1px solid var(--rule);
 }
@@ -168,17 +170,43 @@ body {
 .results__item[aria-selected="true"],
 .results__item:hover { background: #211C15; }
 
-.results__name { font-weight: 500; }
-.results__year { font-family: var(--mono); font-size: 0.8rem; color: var(--bone-dim); }
+/* Reserved frame: same size whether or not the image has loaded, so the list
+   never reflows mid-search. */
+.results__thumb {
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 34px;
+  height: 51px;
+  background: #221D17;
+  border: 1px solid var(--rule);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.results__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-/* Fills in after the credits call; empty until then, so the row doesn't jump */
+.results__name { font-weight: 500; }
+.results__year { color: var(--bone-dim); font-weight: 400; }
+
+.results__votes {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--bone-dim);
+  white-space: nowrap;
+}
+
+/* Fills in after the credits call; the row already reserves its height */
 .results__director {
-  grid-column: 1 / -1;
+  grid-column: 2 / -1;
+  min-height: 1.2em;
   font-size: 0.8rem;
   color: var(--bone-dim);
-  line-height: 1.3;
+  line-height: 1.2;
 }
-.results__director:not(:empty) { margin-top: 0.15rem; }
 
 .results__empty { padding: 0.9rem 1rem; color: var(--bone-dim); }
 
@@ -246,6 +274,11 @@ body {
   font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
   line-height: 1.1;
   letter-spacing: -0.015em;
+}
+
+.film-title__year {
+  color: var(--bone-dim);
+  font-variation-settings: 'wdth' 100, 'wght' 400;
 }
 
 .film-credits {

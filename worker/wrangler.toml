@@ -5,6 +5,6 @@ compatibility_date = "2025-01-01"
 [vars]
 # Your GitHub Pages origin — no trailing slash, no path.
 # For a project site this is still just the origin, e.g. https://you.github.io
-ALLOWED_ORIGIN = "https://YOUR-USERNAME.github.io"
+ALLOWED_ORIGIN = "https://itsjohnreid.github.io"
 
 # No secrets needed: Letterboxd film pages are public and unauthenticated.
